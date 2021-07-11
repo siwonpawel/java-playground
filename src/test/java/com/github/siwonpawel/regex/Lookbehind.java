@@ -2,6 +2,7 @@ package com.github.siwonpawel.regex;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +26,10 @@ public class Lookbehind {
         assertFalse(pattern.matcher("import static org.junit.Assert.assertEquals;").find());
     }
 
+
+    public static void main(String[] args) {
+
+    }
     /*
         (?<!criteria)
 
