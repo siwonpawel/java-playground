@@ -96,12 +96,70 @@ class FunctionTest {
                 .apply(String::valueOf);
 
         //when
-        var apply1 = stringify
+        var result = stringify
                 .apply(x -> x * 0.23)
                 .apply(10.0);
 
         //then
         Assertions.assertEquals(2.3F, Float.parseFloat(result), 0.0001);
+    }
+
+    @Test
+    void ex_2_8_partialBFunction() {
+        //given
+        Function<Float, Function<Integer, String>> doubled = m -> i -> String.valueOf(m.intValue() * 2 + i);
+
+        //when 2 * 2 + 10 -> toString
+        var result = Function.partialB(10, doubled)
+                .apply(2F);
+
+        //then
+        Assertions.assertEquals("14", result);
+    }
+
+    @Test
+    void ex_2_9_stringFormatter() {
+        //when
+        var result = Function.fourFormatter().apply("first")
+                .apply("second")
+                .apply("third")
+                .apply("fourth");
+
+        //then
+        Assertions.assertEquals("first second third fourth", result);
+    }
+
+    @Test
+    void ex_2_10_tupleResolver() {
+        //given
+        Function<Tuple<Integer, Integer>, String> convert = tuple -> String.valueOf(tuple.getLeft() + tuple.getRight());
+
+        //when
+        var result = Function.tupleResolver(convert).apply(10).apply(5);
+
+        //then
+        Assertions.assertEquals("15", result);
+    }
+
+    @Test
+    void ex_2_11_reverseArguments() {
+        //given
+        Function<String, Function<String, Integer>> adder = s1 -> s2 -> Integer.parseInt(s1) + Integer.parseInt(s2);
+
+        //when
+        var result = Function.reverseArgs(adder).apply("1").apply("1");
+
+        //then
+        Assertions.assertEquals(2, result);
+    }
+
+    @Test
+    void ex_2_12_factorial() {
+        //when
+        var result = Function.factorial().apply(5);
+
+        //then
+        Assertions.assertEquals(120, result);
     }
 
 }
