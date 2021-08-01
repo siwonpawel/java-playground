@@ -1,29 +1,40 @@
 package functional.donut_shop;
 
-public class Result {
+public interface Result<T> {
 
-    protected String message;
+    void bind(Effect<T> success, Effect<String> failure);
 
-    private Result() {
-
+    static <T> Result<T> success(T value) {
+        return new Success<>(value);
     }
 
-    public String getMessage() {
-        return message;
+    static <T> Result<T> failure(String message) {
+        return new Failure(message);
     }
 
-    private Result(String message) {
-        this.message = message;
+    static class Success<T> implements Result<T> {
+        T value;
+
+        public Success(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public void bind(Effect<T> success, Effect<String> failure) {
+            success.apply(value);
+        }
     }
 
-    public static class Success extends Result {
-
-    }
-
-    public static class Failure extends Result {
+    static class Failure<T> implements Result<T> {
+        String value;
 
         public Failure(String message) {
-            super(message);
+            this.value = message;
+        }
+
+        @Override
+        public void bind(Effect<T> success, Effect<String> failure) {
+            failure.apply(value);
         }
     }
 

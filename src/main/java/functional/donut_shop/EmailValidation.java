@@ -8,20 +8,20 @@ public class EmailValidation {
 
     static Pattern emailPattern = Pattern.compile("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
 
-    static Function<String, Result> emailChecker = s ->
+    static Function<String, Result<String>> emailChecker = s ->
             s == null
                     ? new Result.Failure("Email cannot be null") :
                     s.equals("")
-                            ? new Result.Failure("Email cannot be empty")
+                            ? Result.failure("Email cannot be empty")
                             : emailPattern.matcher(s).matches()
-                            ? new Result.Success() :
-                            new Result.Failure("Email address " + s + " is not correct");
+                            ? Result.success(s) :
+                            Result.failure("Email address " + s + " is not correct");
 
     public static void main(String args) {
-        validate("to.jest@jakis.adres").exec();
-        validate("null").exec();
-        validate("").exec();
-        validate("jan.kowalski@test.com").exec();
+        validate("to.jest@jakis.adres").bind(EmailValidation::sendVerificationMail, EmailValidation::logError);
+        validate("null").bind(EmailValidation::sendVerificationMail, EmailValidation::logError);
+        validate("").bind(EmailValidation::sendVerificationMail, EmailValidation::logError);
+        validate("jan.kowalski@test.com").bind(EmailValidation::sendVerificationMail, EmailValidation::logError);
     }
 
     private static void logError(String s) {
@@ -32,10 +32,7 @@ public class EmailValidation {
         System.out.println("Wysyłam: " + s);
     }
 
-    static Executable validate(String s) {
-        Result result = emailChecker.apply(s);
-        return result instanceof Result.Success ?
-                () -> sendVerificationMail(s) :
-                () -> logError(result.getMessage());
+    static Result<String> validate(String s) {
+        return emailChecker.apply(s);
     }
 }
